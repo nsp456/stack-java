@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stack Implementation</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        .stack-container {
+            margin-top: 20px;
+        }
+        .stack-item {
+            padding: 10px;
+            border: 1px solid #000;
+            margin: 5px 0;
+            text-align: center;
+        }
+        .highlight {
+            background-color: red;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <h1>Stack Implementation in Java</h1>
+    <label for="input">Number: </label><br/>
+    <input type="number" id="input" name="inp"/><br><br>
+    <button onclick="push()">Push</button>
+    <button onclick="pop()">Pop</button>
+    <button onclick="peek()">Peek</button>
+    <button onclick="setSize()">Set Size</button>
+    <button onclick="getSize()">Get Size</button>
+    <div class="stack-container" id="stackContainer">
+        <h2>Stack:</h2>
+        <div id="stack"></div>
+    </div>
+
+    <script>
+        async function push() {
+            const value = document.getElementById('input').value;
+            if (value) {
+                const response = await fetch('/push', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ value: parseInt(value) })
+                });
+                if (response.ok) {
+                    updateStack();
+                } else {
+                    alert("Can't add elements to a full stack");
+                }
+            }
+        }
+
+        async function pop() {
+            const response = await fetch('/pop', {
+                method: 'POST'
+            });
+            if (response.ok) {
+                updateStack();
+            } else {
+                alert("Can't pop from an empty stack");
+            }
+        }
+
+        async function getSize() {
+            const response = await fetch('/getSize', {
+                method: 'GET'
+            });
+            if (response.ok) {
+                const size = await response.json();
+                alert("Size of stack is " + size);
+            } else {
+                alert("Failed to get the size of the stack");
+            }
+        }
+
+        async function peek() {
+            const response = await fetch('/stack');
+            const stack = await response.json();
+            if (stack.length > 0) {
+                const stackContainer = document.getElementById('stackContainer');
+                const stackItems = document.getElementsByClassName('stack-item');
+                for (let item of stackItems) {
+                    item.classList.remove('highlight');
+                }
+                stackItems[0].classList.add('highlight');
+                setTimeout(() => {
+                    stackItems[0].classList.remove('highlight');
+                }, 1000);
+            } else {
+                alert("Stack is empty");
+            }
+        }
+
+        async function setSize() {
+            const value = document.getElementById('input').value;
+            if (value) {
+                const response = await fetch('/setSize', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ value: parseInt(value) })
+                });
+                if (response.ok) {
+                    updateStack();
+                } else {
+                    alert("New size cannot be less than the current stack size");
+                }
+            }
+        }
+
+        async function updateStack() {
+            const response = await fetch('/stack');
+            const stack = await response.json();
+            const stackContainer = document.getElementById('stack');
+            stackContainer.innerHTML = '';
+            stack.reverse().forEach(item => {
+                const div = document.createElement('div');
+                div.className = 'stack-item';
+                div.textContent = item;
+                stackContainer.appendChild(div);
+            });
+        }
+
+        // Initial stack load
+        updateStack();
+    </script>
+</body>
+</html>

@@ -1,0 +1,6 @@
+com\example\stack\StackController.class
+com\example\stack\StackOverflowException.class
+com\example\stack\StackApplication.class
+com\example\stack\StackUnderflowException.class
+com\example\stack\StackRequest.class
+com\example\stack\CustomStack.class
